@@ -1,0 +1,712 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?>  -->  
+<!--                      BOEING PROPRIETARY                -->
+<!-- DOCTYPE mpd  [ -->  
+
+<!-- The following set of declarations may be referred to
+     using the public entity as follows:
+     <!DOCTYPE mpd      PUBLIC
+     "-//BOEING-TEXT//DTD MPD-BOEING-VER05-LEVEL4//EN"[]>   -->
+
+<!-- 
+************************************************************************ 
+*****
+***** Revision History: 
+***** DTD File Name: mpboe05.dtd.
+***** Revision Date: March 25, 2018.
+***** Added optional element mpd-item-nbr-dmc to the following elements: 
+***** mrb-hirf-task, labor-hour, mpd-dmc-xref, mpd-smp-task-by-phase,
+***** mpd-struct-maint, mpd-sys-maint, mpd-xref, mrb-struct-task,  
+***** mrb-sys-task, mrb-xref, source-document, task-card-xref,  
+***** task-interval, mpd-zone-insp, and mrb-zone-task.
+***** Updated version from mpboe04 to mpboe05.
+*****
+************************************************************************ 
+--> 
+
+<!-- 
+************************************************************************ 
+*****
+***** Revision History: 
+***** DTD File Name: mpboe04.dtd.
+***** Revision Date: March 19, 2013.
+***** Moved the Notations section to the front of the DTD to harmonize 
+***** with the other DTDs and added a "Notations" heading.
+***** Moved the Entities section to the front of the DTD to harmonize 
+***** with the other DTDs and added a new "Entities" heading.
+***** Added a the entity %text.
+***** Added a new section heading for "MPD Top Level Structure".
+***** Added required element title, optional elements legalntc and tr to MPD.
+***** Added an attribute list to the MPD element containing the following:
+***** spl, model, oidate, revdate, tsn, cus, cusname, docnbr, and lang. 
+***** Added optional elements tr, trfmatr, and trreason.
+***** Added optional element legalntc.
+***** Added new elements sub and super to para with content of #PCDATA.
+***** Removed title-page element from frontmatter.
+***** Removed the elements copyright, doc-nbr, rev-date and model.
+***** Added element num-list and num-litem.
+*****
+************************************************************************ 
+--> 
+ 
+<!-- 
+************************************************************************ 
+*****
+***** DTD File Name: mpboe03.dtd.
+***** Revision Date: Dec 19, 2007.
+***** Added specnote (special note) as choice for attribute type 
+***** in elements note and task-note.
+***** Revision Date: Oct 09, 2007.
+***** Increased the DTD version.
+***** Added element mpd-dmc-xrefs as choice in entity smitsxrefs.
+***** Added elements mpd-dmc-xrefs and mpd-dmc-xref.
+***** Changed ammrefs to optional in mpd-struct-maint element structure.
+***** Changed ammrefs to optional in mpd-sys-maint element structure.
+***** Changed ammrefs to optional in mpd-zone-insp element structure.
+*****
+************************************************************************ 
+--> 
+
+<!--
+************************************************************************ 
+*****
+*****  MPD XML Deliverable DTD 16 August 2004
+*****
+************************************************************************
+-->
+
+<!--
+************************************************************************ 
+*******NOTATIONS
+************************************************************************
+-->
+
+<!NOTATION cgm PUBLIC "-//USA-DOD//NOTATION Computer Graphics Metafile//EN">
+<!NOTATION ccitt4 PUBLIC "-//USA-DOD//NOTATION CCITT Group4 Facsimile//EN">
+
+<!--
+************************************************************************ 
+*******ENTITIES
+************************************************************************
+-->
+
+<!ENTITY % content "definition|para|un-list|note|table|graphic">
+
+<!ENTITY % smitsxrefs "mrb-xrefs|mpd-xrefs|task-card-xrefs|mpd-dmc-xrefs">
+
+<!ENTITY % smitstable "mpd-sys-maints|mpd-struct-maints|mpd-zone-insps
+                       |source-documents|labor-hours
+                       |mpd-report-param-head|mpd-smp-manhour-by-skills
+                       |mpd-smp-mtops|mpd-smp-task-by-phases
+                       |task-intervals|mrb-sys-tasks|mrb-struct-tasks
+                       |mrb-zone-tasks|mrb-hirf-tasks">
+
+<!ENTITY % emodtable "cmrs|precluded-tasks">
+
+<!ENTITY % table "%smitstable;|%emodtable;">
+
+<!ENTITY % yesorno 'NMTOKEN'>
+
+<!ENTITY % text "(para | table | un-list | num-list | note)+">
+
+<!--
+************************************************************************ 
+*******MPD TOP LEVEL STURCTURE
+************************************************************************
+-->
+<!ELEMENT mpd ((title, legalntc?, frontmatter, chapter+, appendix+) | tr)>
+<!ATTLIST mpd
+          spl      CDATA       #REQUIRED
+	  model    CDATA       #REQUIRED
+	  oidate   NMTOKEN     #REQUIRED
+	  revdate  NMTOKEN     #REQUIRED
+	  tsn      CDATA       #IMPLIED
+	  cus      CDATA       #IMPLIED  
+          cusname  CDATA       #IMPLIED
+	  docnbr   CDATA       #IMPLIED
+	  lang     CDATA       #REQUIRED >
+	  
+<!ELEMENT tr  (legalntc?, trfmatr, (introduction | chapter | section 
+               | smits-section | legalntc | appendix))>
+	       
+<!ELEMENT trfmatr  (title, trreason, (%text;)?)>
+<!ATTLIST trfmatr
+          trnbr    CDATA    #REQUIRED
+	  trdel    CDATA    #IMPLIED
+	  trrepl   CDATA    #IMPLIED
+	  issdate  NMTOKEN  #REQUIRED>
+	  
+<!ELEMENT trreason  (#PCDATA) >
+
+
+<!-- **** ata-headers ***************************************************** -->
+
+<!ELEMENT ata-header (#PCDATA)>
+
+
+<!-- **** frontmatter ***************************************************** -->
+
+<!ELEMENT frontmatter (introduction?)>
+
+<!ELEMENT introduction (title, section+)>
+
+<!-- **** Legal Notice Information **************************************** -->
+<!ELEMENT legalntc  (exprtcl | cpyrght | proptary | geninfo)+ >
+<!ELEMENT proptary  (fullstmt, partstmt?) >
+<!ELEMENT fullstmt  (title?, cpyrght?, para+) >
+<!ELEMENT partstmt  (title?, para+) >
+<!ELEMENT exprtcl   (para | un-list | num-list | note)+ >
+<!ELEMENT cpyrght   (year*, holder*, geninfo) >
+<!ELEMENT year      (#PCDATA) >
+<!ELEMENT holder    (#PCDATA) >
+<!ELEMENT geninfo   (para | un-list | num-list | note )+ >
+
+
+<!-- **** chapter ********************************************************* -->
+
+<!ELEMENT chapter (title, (smits-section|section)*)>
+
+<!ATTLIST chapter
+  fragment CDATA #IMPLIED
+  subfragment CDATA #IMPLIED
+  key CDATA #IMPLIED>
+
+<!-- **** appendix ******************************************************** -->
+
+<!ELEMENT appendix (title, (smits-section|section)*)>
+
+<!ATTLIST appendix
+  fragment CDATA #IMPLIED
+  subfragment CDATA #IMPLIED
+  key CDATA #IMPLIED>
+
+<!-- **** smp header ***************************************************** -->
+
+<!ELEMENT smp-header (job_id, flight_hrs_per_cycle, flight_hrs_per_day,
+                      maint_cycle_years, major_check_letter,
+                      major_per_maint_cycle, major_months,
+                      minor_check_letter, minor_per_major, minor_days)>
+
+<!ELEMENT job_id (#PCDATA)>
+
+<!ELEMENT flight_hrs_per_cycle (#PCDATA)>
+
+<!ELEMENT flight_hrs_per_day (#PCDATA)>
+
+<!ELEMENT maint_cycle_years (#PCDATA)>
+
+<!ELEMENT major_check_letter (#PCDATA)>
+
+<!ELEMENT major_per_maint_cycle (#PCDATA)>
+
+<!ELEMENT major_months (#PCDATA)>
+
+<!ELEMENT minor_check_letter (#PCDATA)>
+
+<!ELEMENT minor_per_major (#PCDATA)>
+
+<!ELEMENT minor_days (#PCDATA)>
+
+<!-- **** GENERIC TABLES ************************************************** -->
+
+<!ELEMENT table ((title, ftnote-ref*)?, tgroup, ftnote*)>
+
+<!ATTLIST table
+  colsep %yesorno; #IMPLIED
+  frame (top|bottom|topbot|all|sides|none) #IMPLIED
+  pgwide %yesorno; #IMPLIED
+  rowsep %yesorno; #IMPLIED
+  tabstyle NMTOKEN #IMPLIED
+  orientation (upright|rotated) 'upright'>
+
+<!ELEMENT tgroup (colspec*, thead?, tbody)>
+
+<!ATTLIST tgroup
+  align (left|right|center|justify) #IMPLIED
+  cols NMTOKEN #REQUIRED
+  colsep %yesorno; #IMPLIED
+  rowsep %yesorno; #IMPLIED>
+
+<!ELEMENT colspec EMPTY>
+
+<!ATTLIST colspec
+  align (left|right|center|justify) #IMPLIED
+  colname CDATA #IMPLIED
+  colnum NMTOKEN #IMPLIED
+  colsep %yesorno; #IMPLIED
+  colwidth CDATA #IMPLIED
+  rowsep %yesorno; #IMPLIED>
+
+<!ELEMENT thead (colspec*, row+)>
+
+<!ATTLIST thead
+  valign (top|middle|bottom) #IMPLIED>
+
+<!ELEMENT row (entry)+>
+
+<!ATTLIST row
+  rowsep %yesorno; #IMPLIED
+  valign (top|middle|bottom) #IMPLIED>
+
+<!ELEMENT entry (para|un-list|ftnote-ref)*>
+
+<!ATTLIST entry
+  align (left|right|center|justify) #IMPLIED
+  colname CDATA #IMPLIED
+  colsep %yesorno; #IMPLIED
+  morerows NMTOKEN #IMPLIED
+  nameend NMTOKEN #IMPLIED
+  namest NMTOKEN #IMPLIED
+  rowsep %yesorno; #IMPLIED
+  valign (top|middle|bottom) #IMPLIED>
+
+<!ELEMENT tbody (row)+>
+
+<!ATTLIST tbody
+  valign (top|middle|bottom) #IMPLIED>
+
+<!ELEMENT ftnote (note|para)+>
+
+<!ATTLIST ftnote
+  id ID #REQUIRED>
+
+<!ELEMENT ftnote-ref EMPTY>
+
+<!ATTLIST ftnote-ref
+  idref IDREF #REQUIRED>
+
+<!-- **** Element, Attribute declarations in alphabetical order *********** -->
+
+<!ELEMENT ammref (#PCDATA)> 
+
+<!ELEMENT ammrefs (ammref)*>
+
+<!ELEMENT definition (term, def-desc)>
+
+<!ELEMENT def-desc (para)+>
+
+<!ELEMENT graphic (seq?, title, sheet+)>
+
+<!ELEMENT li (para)+>
+
+<!ELEMENT mpd-item-nbr (#PCDATA)>
+
+<!ELEMENT mpd-item-nbr-dmc (#PCDATA)>
+
+<!ELEMENT note (para)+>
+
+<!ATTLIST note
+  type (specnote|airplane|engine|interval|access|boundary|location) #IMPLIED>
+
+<!ELEMENT para (#PCDATA | sub | super)*>
+
+<!ELEMENT sub (#PCDATA)>
+
+<!ELEMENT super (#PCDATA)>
+
+<!ELEMENT prcitem (title?, (%content;)*)>
+
+<!ELEMENT prcitem-1 (seq?, prcitem, prclist-2?)>
+
+<!ELEMENT prclist-1 (prcitem-1)+>
+
+<!ELEMENT prcitem-2 (seq?, prcitem, prclist-3?)>
+
+<!ELEMENT prclist-2 (prcitem-2)+>
+
+<!ELEMENT prcitem-3 (seq?, prcitem, prclist-4?)>
+
+<!ELEMENT prclist-3 (prcitem-3)+>
+
+<!ELEMENT prcitem-4 (seq?, prcitem)>
+
+<!ELEMENT prclist-4 (prcitem-4)+>
+
+<!ELEMENT section (seq?, title, seq?, (subject|prclist-1|%content;)+)>
+
+<!ELEMENT seq (#PCDATA)>
+
+<!ELEMENT sheet EMPTY>
+
+<!ATTLIST sheet
+  gnbr ENTITY #REQUIRED
+  revdate CDATA #REQUIRED>
+
+<!ELEMENT smits-section (title?,
+                         (%smitsxrefs;|%table;|subject|%content;)+)>
+
+<!ATTLIST smits-section
+  fragment CDATA #IMPLIED
+  subfragment CDATA #IMPLIED
+  key CDATA #IMPLIED>
+
+<!ELEMENT subject (seq?, title, seq?,
+                   (%smitsxrefs;|(prclist-1|%content;)+))>
+
+<!ELEMENT term (#PCDATA)>
+
+<!ELEMENT title (#PCDATA)>
+
+<!ELEMENT un-list (li)+>
+
+<!ELEMENT num-list  (num-litem+) >
+<!ATTLIST num-list
+          numtype  (NNP | AUP | NNB | ALB | NNS | RUP | RLP 
+	            |RUR | RLR | NNR | AUR | ALR)   "NNP"   >
+		    
+<!ELEMENT num-litem  (para+) >
+
+<!-- **** MPD elements for tables generated from SMITS **************** -->
+
+<!ELEMENT a-phase (phase-hrs, phase-cyc, phase-eq-cyc, phase-day,
+                   phase-eq-day, phase-mos, phase-eq-mos)>
+
+<!ELEMENT c-phase (phase-hrs, phase-eq-hrs, phase-cyc, phase-eq-cyc,
+                   phase-day, phase-eq-day, phase-mos, phase-eq-mos)>
+
+<!ELEMENT phase-hrs (#PCDATA)>
+
+<!ELEMENT phase-eq-hrs (#PCDATA)>
+
+<!ELEMENT phase-cyc (#PCDATA)>
+
+<!ELEMENT phase-eq-cyc (#PCDATA)>
+
+<!ELEMENT phase-day (#PCDATA)>
+
+<!ELEMENT phase-eq-day (#PCDATA)>
+
+<!ELEMENT phase-mos (#PCDATA)>
+
+<!ELEMENT phase-eq-mos (#PCDATA)>
+
+<!ELEMENT maint-cyc-num (#PCDATA)>
+
+<!ELEMENT a-phase-per-maint-cyc (#PCDATA)>
+
+<!ELEMENT c-phase-per-maint-cyc (#PCDATA)>
+
+<!ELEMENT a-phase-per-c-phase (#PCDATA)>
+
+<!ELEMENT phase-group-range (#PCDATA)>
+
+<!ELEMENT processed-phase-group (#PCDATA)>
+
+<!ELEMENT acces (#PCDATA)>
+
+<!ELEMENT access-hours (#PCDATA)>
+
+<!ELEMENT access-panel (#PCDATA)>
+
+<!ELEMENT access-panels (access-panel)*>
+
+<!ATTLIST access-panels
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT airpl (#PCDATA)>
+
+<!ELEMENT airplane-applicabilities (airplane-applicability)*>
+
+<!ATTLIST airplane-applicabilities
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT airplane-applicability (#PCDATA)>
+
+<!ELEMENT avion (#PCDATA)>
+
+<!ELEMENT categories (category)*>
+
+<!ELEMENT category (#PCDATA)>
+
+<!ELEMENT engin (#PCDATA)>
+
+<!ELEMENT engine-applicabilities (engine-applicability)*>
+
+<!ATTLIST engine-applicabilities
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT engine-applicability (#PCDATA)>
+
+<!ELEMENT mrb-hirf-task (mpd-item-nbr, mpd-item-nbr-dmc?, categories, 
+                         task-code, interval-thresholds, interval-repeats, 
+                         zones, access-panels, airplane-applicabilities,
+                         engine-applicabilities, man-hours,
+                         task-description)>
+<!ATTLIST mrb-hirf-task tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mrb-hirf-tasks (ata-header?, mrb-hirf-task+)*>
+
+<!ELEMENT interval-repeats (repeat)+>
+
+<!ATTLIST interval-repeats
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT interval-thresholds (threshold)+>
+
+<!ATTLIST interval-thresholds
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT labor-hour (mpd-item-nbr, mpd-item-nbr-dmc?, access-hours, man-hours, 
+                      total-hours, access-panels)>
+<!ATTLIST labor-hour tasknbr CDATA #IMPLIED>
+
+<!ELEMENT labor-hours (labor-hour)*>
+
+<!ELEMENT man-hours (#PCDATA)>
+
+<!ELEMENT mpd-dmc-xrefs (mpd-dmc-xref*)>
+
+<!ELEMENT mpd-dmc-xref (task-card-nbr, mpd-item-nbr, mpd-item-nbr-dmc?, 
+                        mrb-item-nbr, related-task-cards, ammrefs, tasktype, 
+			task-card-title)>
+
+<!ELEMENT mpd-report-param-head (flight_hrs_per_cycle,
+                                 flight_hrs_per_day, a-phase,c-phase,
+                                 maint-cyc-num, a-phase-per-maint-cyc,
+                                 c-phase-per-maint-cyc,
+                                 a-phase-per-c-phase, phase-group-range,
+                                 processed-phase-group)?>
+
+<!ELEMENT mpd-smp-manhour-by-skills (mpd-smp-manhour-by-skill+,
+                                     mpd-smp-manhour-by-skill-totals,
+                                     mpd-smp-manhour-by-skill-averages)?>
+
+<!ELEMENT mpd-smp-manhour-by-skill (phase, airpl, avion, engin, acces,
+                                    total)>
+
+<!ELEMENT mpd-smp-manhour-by-skill-averages (airpl, avion, engin, acces,
+                                             total)>
+
+<!ELEMENT mpd-smp-manhour-by-skill-totals (airpl, avion, engin, acces,
+                                           total)>
+
+<!ELEMENT mpd-smp-mtops (smp-header?, mpd-smp-mtop*)>
+
+<!ATTLIST mpd-smp-mtops
+  major-per-maint-cyc CDATA #IMPLIED
+  minor-per-major CDATA #IMPLIED>
+
+<!ELEMENT mpd-smp-mtop (mprog, task-card-nbr, interval-thresholds,
+                        interval-repeats, phase, mtop-line)>
+
+<!ELEMENT mpd-smp-task-by-phases (mpd-smp-task-by-phase)*>
+
+<!ELEMENT mpd-smp-task-by-phase (phase, interval-thresholds,
+                                 interval-repeats, task-card-nbr,
+                                 mpd-item-nbr, mpd-item-nbr-dmc?, man-hours, 
+                                 zones, access-panels, access-hours, 
+                                 task-code, task-card-title)>
+
+<!ELEMENT mpd-struct-maint (mpd-item-nbr, mpd-item-nbr-dmc?, ammrefs?, program, 
+                            zones, access-panels, interval-thresholds, 
+                            interval-repeats, airplane-applicabilities,
+                            engine-applicabilities, man-hours,
+                            task-description)>
+
+<!ATTLIST mpd-struct-maint tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mpd-struct-maints (ata-header?, mpd-struct-maint+)*>
+
+<!ATTLIST mpd-struct-maints
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT mpd-sys-maint (mpd-item-nbr, mpd-item-nbr-dmc?, ammrefs?, categories, 
+                         task-code, interval-thresholds, interval-repeats, 
+                         zones, access-panels, airplane-applicabilities,
+                         engine-applicabilities, man-hours,
+                         task-description)>
+<!ATTLIST mpd-sys-maint tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mpd-sys-maints (ata-header?, mpd-sys-maint+)*>
+
+<!ATTLIST mpd-sys-maints
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT mpd-xref (mpd-item-nbr, mpd-item-nbr-dmc?, mrb-item-nbr, 
+                    task-card-nbrs, related-task-cards, tasktype, 
+		    task-card-title)>
+
+<!ELEMENT mpd-xrefs (mpd-xref)*>
+
+<!ELEMENT mprog (#PCDATA)>
+
+<!ELEMENT mrb-struct-task (mpd-item-nbr, mpd-item-nbr-dmc?, program, zone, 
+                           access-panels, interval-thresholds, interval-repeats,
+                           airplane-applicabilities,
+                           engine-applicabilities, task-description)>
+<!ATTLIST mrb-struct-task tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mrb-struct-tasks (ata-header?, mrb-struct-task+)*>
+
+<!ATTLIST mrb-struct-tasks
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT mrb-sys-tasks (ata-header?, mrb-sys-task+)*>
+
+<!ATTLIST mrb-sys-tasks
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT mrb-sys-task (mpd-item-nbr, mpd-item-nbr-dmc?, categories, 
+                        task-code, interval-thresholds, interval-repeats,
+                        airplane-applicabilities, engine-applicabilities,
+                        task-description)>
+<!ATTLIST mrb-sys-task tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mrb-item-nbr (#PCDATA)>
+
+<!ELEMENT mrb-xref (mrb-item-nbr, mpd-item-nbr, mpd-item-nbr-dmc?, 
+                    task-card-nbrs, related-task-cards, tasktype, 
+		    task-card-title)>
+
+<!ELEMENT mrb-xrefs (mrb-xref)*>
+
+<!ELEMENT mtop-line (mtop-x|mtop-s)+>
+
+<!ELEMENT mtop-x EMPTY>
+
+<!ELEMENT mtop-s EMPTY>
+
+<!ELEMENT phase (#PCDATA)>
+
+<!ELEMENT program (#PCDATA)>
+
+<!ELEMENT related-task-card (#PCDATA)>
+
+<!ELEMENT related-task-cards (related-task-card)*>
+
+<!ELEMENT repeat (#PCDATA)>
+
+<!ELEMENT source-document (source, src-ref, src-rev, src-date, mpd-item-nbr, 
+                    	   mpd-item-nbr-dmc?)>
+<!ATTLIST source-document tasknbr CDATA #IMPLIED>
+
+<!ELEMENT source-documents (source-document)*>
+
+<!ATTLIST source-documents
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT source (#PCDATA)>
+
+<!ELEMENT src-date (#PCDATA)>
+
+<!ELEMENT src-ref (#PCDATA)>
+
+<!ELEMENT src-rev (#PCDATA)>
+
+<!ELEMENT task-card-nbr (#PCDATA)>
+
+<!ELEMENT task-card-nbrs (task-card-nbr)*>
+
+<!ELEMENT task-card-title (#PCDATA)>
+
+<!ELEMENT task-card-xrefs (task-card-xref)*>
+
+<!ELEMENT task-card-xref (task-card-nbr, mpd-item-nbr, mpd-item-nbr-dmc?, 
+                          mrb-item-nbr, related-task-cards, tasktype, 
+                          task-card-title)>
+
+<!ELEMENT task-code (#PCDATA)>
+
+<!ELEMENT task-description (task-title?, taskdesc, task-note*)>
+
+<!ELEMENT task-interval (interval-thresholds, interval-repeats,
+                         mpd-item-nbr, mpd-item-nbr-dmc?, 
+                         task-card-title)>
+<!ATTLIST task-interval tasknbr CDATA #IMPLIED>
+
+<!ELEMENT task-intervals (task-interval)*>
+
+<!ELEMENT task-note (para|un-list)+>
+
+<!ATTLIST task-note
+  type (specnote|airplane|engine|interval|access|boundary|location) #REQUIRED>
+
+<!ELEMENT task-title (taskloc, tasktype, titletext)>
+
+<!ELEMENT taskdesc (para|un-list)+>
+
+<!ELEMENT taskloc (#PCDATA)>
+
+<!ELEMENT tasktype (#PCDATA)>
+
+<!ELEMENT titletext (#PCDATA)>
+
+<!ELEMENT threshold (#PCDATA)>
+
+<!ELEMENT total (#PCDATA)>
+
+<!ELEMENT total-hours (#PCDATA)>
+
+<!ELEMENT mpd-zone-insp (mpd-item-nbr, mpd-item-nbr-dmc?, ammrefs?, 
+                         zones, access-panels, interval-thresholds, 
+                         interval-repeats, airplane-applicabilities,
+                         engine-applicabilities, man-hours,
+                         task-description)>
+<!ATTLIST mpd-zone-insp tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mpd-zone-insps (ata-header?, mpd-zone-insp+)*>
+
+<!ATTLIST mpd-zone-insps
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT mrb-zone-task (mpd-item-nbr, mpd-item-nbr-dmc?, zones, 
+                         access-panels, interval-thresholds, 
+                         interval-repeats, airplane-applicabilities,
+                         engine-applicabilities, task-description)>
+<!ATTLIST mrb-zone-task tasknbr CDATA #IMPLIED>
+
+<!ELEMENT mrb-zone-tasks (ata-header?, mrb-zone-task+)*>
+
+<!ATTLIST mrb-zone-tasks
+  chapter-id ID #REQUIRED>
+
+<!ELEMENT zone (#PCDATA)>
+
+<!ELEMENT zones (zone)*>
+
+<!-- **** Non-SMITS Generated specific tables ***************************** -->
+
+<!ELEMENT cmrs (cmr)+>
+
+<!ELEMENT cmr (cmr-item-nbr, cmr-type, related-mrbs, task-cat,
+               cmr-intervals, airplane-applicabilities,
+               engine-applicabilities, task-description)>
+
+<!ELEMENT cmr-item-nbr (#PCDATA)>
+
+<!ELEMENT cmr-type (#PCDATA)>
+
+<!ELEMENT related-mrbs (related-mrb)+>
+
+<!ELEMENT related-mrb (#PCDATA)>
+
+<!ELEMENT task-cat (#PCDATA)>
+
+<!ELEMENT cmr-intervals (cmr-interval)+>
+
+<!ATTLIST cmr-intervals
+  note-ref (yes|no) 'no'>
+
+<!ELEMENT cmr-interval (#PCDATA)>
+
+<!ELEMENT precluded-tasks (precluded-task)+>
+
+<!ELEMENT precluded-task (zonal-task-nbr, zonal-task-desc,
+                          precluded-zones, precluded-sys-tasks,
+                          precluded-struct-tasks)>
+
+<!ELEMENT precluded-struct-task (#PCDATA)>
+
+<!ELEMENT precluded-struct-tasks (precluded-struct-task)+>
+
+<!ELEMENT precluded-sys-task (#PCDATA)>
+
+<!ELEMENT precluded-sys-tasks (precluded-sys-task)+>
+
+<!ELEMENT precluded-zone (#PCDATA)>
+
+<!ELEMENT precluded-zones (precluded-zone)+>
+
+<!ELEMENT zonal-task-nbr (#PCDATA)>
+
+<!ELEMENT zonal-task-desc (#PCDATA)>
+<!-- ]>   -->   
