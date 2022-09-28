@@ -9,31 +9,52 @@ Str = pd.read_excel('data\mpdsup.xls', "STRUCTURAL MAINTENANCE PROGRAM", skiprow
 Zon = pd.read_excel('data\mpdsup.xls', "ZONAL INSPECTION PROGRAM", skiprows=5, names=["Revision", "Index", "MPD ITEM NUMBER", "AMM REFERENCE", "ZONE", "ACCESS", "INTERVAL THRES.", "INTERVAL REPEAT", "APPLICABILITY APL", "APPLICABILITY ENG", "MAN-HOURS", "TASK DESCRIPTION"])
 
 ############################ Functions ############################
+# A function to extract the core items such as FC / FH / Days
+# Loads in:
+# mpd - the current working MPD tab
+# compilecheck - the Regex pattern to be searched
+# columnFrom - the colum to be searched
+# columnTo - the column for the extracted text to be placed into
+# factor - the multiplying factor for calendar items like years or months
 def extracter(mpd, compilecheck, columnFrom, columnTo, factor):
+    # working through the whole MPD sheet one row at a time iterativly
     for index, row in mpd.iterrows():
-        # On each row check the Taks Description for a match with Airplane Note
+        # loading pattern to be searched into Regex
         pattern = re.compile(compilecheck)
+        # Searching the pattern in the working row in the selected column to be searched
         result = re.search(pattern, str(row[columnFrom]))
-        # if the result is not None
+        # if the result is not None continue
         if result != None:
+            # Using the factor to correct months and years
             days = int(result.group(0))*factor
-            # Print the extracted text to the new column
+            # Print the extracted number to the chosen column
             mpd.loc[index, columnTo] = days
-        
-        # Sorting out string entries in intervals that will remain the same
-        if str(row[columnFrom]) == 'LIF LIM':
-            mpd.loc[index,columnTo] = str('LLP')
-        
-        if str(row[columnFrom]) == 'APU CNG':
-            mpd.loc[index,columnTo] = str('APU CNG')
 
-        if str(row[columnFrom]) == 'ENG CNG':
-            mpd.loc[index,columnTo] = str('ENG CNG')
+# A function to extract items such as Life Lim and Ven Rec
+# Loads in:
+# mpd - the current working MPD tab
+def textExtracter(mpd):
+    # Loading the columns to be filled into a list, to use in a for loop
+    columnTo = ['THRES. Flight Hours', 'THRES. Flight Cycles', 'THRES. Calendar Days', 'REPEAT Flight Hours', 'REPEAT Flight Cycles', 'REPEAT Calendar Days']
+    # Loading the possible matched and results into a dictionary, to use in a for loop
+    textToExtract = {'LIF LIM':'LLP', 'APU CNG':'APU CNG', 'ENG CNG':'ENG CNG', 'VEN REC':'Hard Time'}
 
-        if str(row[columnFrom]) == 'VEN REC':
-            mpd.loc[index,columnTo] = str('VEN REC')
+    # working through the whole MPD sheet one row at a time iterativly
+    for index, row in mpd.iterrows():
+        # Searching each possible match in a for loop
+        for textType in textToExtract:
+            # searching in the THRES columns as both columns are the same for text items. If there is a match to the searching text continue.
+            if str(row['INTERVAL THRES.']) == textType:
+                # using a for loop for each of the columns to be filled
+                for columns in columnTo:
+                    # using the dictionary key pairs to fill each of the columns
+                    mpd.loc[index,columns] = str(textToExtract[textType])
+
 
 ############################ Functions ############################
+# Loads in:
+# mpd - the current working MPD tab
+# path - the location where the file will be saved
 def formatter(mpd, path):
     # Inserting a blank row for the extracted notes
     colNames = ('THRES. Flight Hours', 'THRES. Flight Cycles', 'THRES. Calendar Days', 'REPEAT Flight Hours', 'REPEAT Flight Cycles', 'REPEAT Calendar Days')
@@ -54,6 +75,9 @@ def formatter(mpd, path):
     extracter(mpd,r'\d+(?= YR)','INTERVAL REPEAT','REPEAT Calendar Days',365.25)
     extracter(mpd,r'\d+(?= DY)','INTERVAL THRES.','THRES. Calendar Days',1)
     extracter(mpd,r'\d+(?= DY)','INTERVAL REPEAT','REPEAT Calendar Days',1)
+
+    #textExtracter
+    textExtracter(mpd)
 
     # Print to Excel
     mpd.to_excel(path)
