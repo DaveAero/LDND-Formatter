@@ -50,6 +50,74 @@ def textExtracter(mpd):
                     # using the dictionary key pairs to fill each of the columns
                     mpd.loc[index,columns] = str(textToExtract[textType])
 
+############################ A function for FLS Tasks ############################
+def slope(x1, y1, x2, y2):
+  if (x2-x1) == 0:
+    return 0
+  s = (y2-y1)/(x2-x1)
+  return s
+
+# Line 1, Aircraft Utilisation
+#starting Utilization
+x1 = 0
+y1 = 0
+# Current Utilization
+x2 = 55517.62
+y2 = 21739
+m1 = slope(x1, y1, x2, y2)
+c1 = y1-(m1*x1)
+
+# Line 2, Flight Cycle limit
+x3 = 0
+y3 = 75000
+
+x4 = 45000
+y4 = 75000
+# m2 = 0
+# c2 = 75000
+
+# Line 3, Sloped limit
+# Starts at the end of line 2
+x5 = 100000
+y5 = 30000
+m3 = slope(x4, y4, x5, y5)
+c3 = y4-(m3*x4)
+
+# Line 4, Flight Hour limit
+# Starting at the end of line 3
+x6 = 100000
+y6 = 0
+# m4 = 0
+# c4 = 30000
+
+
+# line 1 / line 2 intersection
+x12 = (((m1*-x2)+y2) - (y3))/(-m1)
+y12 = 75000
+
+# line 1 / line 3 intersection
+x13 = (((m1*-x2)+y2) - ((m3*-x4)+y4))/(m3-m1)
+y13 = (m3*x13) + ((m3*-x4)+y4)
+
+# line 1 / line 4 intersection
+x14 = 100000
+y14 = (m1*x14) + y1 - (m1*x1)
+
+# finding x intersection
+if x13 < x4:
+    x = x12
+elif x13 > x5:
+    x = x14
+else:
+    x = x13
+
+if y13 > y4:
+    y = y12
+elif y13 < y5:
+    y = y14
+else:
+    y = y13
+
 
 ############################ Functions ############################
 # Loads in:
